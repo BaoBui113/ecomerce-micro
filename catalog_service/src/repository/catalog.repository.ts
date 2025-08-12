@@ -1,4 +1,4 @@
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient } from "../generated/prisma";
 import { Catalog } from "../interface/catalog.interface";
 import { Product } from "../models/product.model";
 
@@ -22,7 +22,7 @@ export class CatalogRepository implements Catalog {
       },
     });
   }
-  async findById(id: number): Promise<Product> {
+  async findById(id: number): Promise<Product | null> {
     return await this._prisma.product.findUnique({
       where: { id },
     });
@@ -34,7 +34,7 @@ export class CatalogRepository implements Catalog {
     });
   }
   async delete(id: number): Promise<void> {
-    return await this._prisma.product.delete({
+    await this._prisma.product.delete({
       where: { id },
     });
   }

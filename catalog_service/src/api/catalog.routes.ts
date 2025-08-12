@@ -21,8 +21,8 @@ router.get(
   "/products",
   async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const limit = Number(req.query.limit);
-      const offset = Number(req.query.offset);
+      const limit = req.query.limit ? Number(req.query.limit) : 10;
+      const offset = req.query.offset ? Number(req.query.offset) : 0;
       const products = await catalogService.getProducts(limit, offset);
       res.status(200).json(products);
     } catch (error) {

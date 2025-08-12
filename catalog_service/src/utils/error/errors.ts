@@ -1,0 +1,39 @@
+import { STATUS_CODES } from "./status-codes";
+
+class BaseError extends Error {
+  public readonly name: string;
+  public readonly status: number;
+  public readonly message: string;
+  constructor(name: string, status: number, description: string) {
+    super(description);
+    this.name = name;
+    this.status = status;
+    this.message = description;
+    Object.setPrototypeOf(this, new.target.prototype);
+    Error.captureStackTrace(this);
+  }
+}
+
+export class ApiError extends BaseError {
+  constructor(description = "api error") {
+    super("ApiError", STATUS_CODES.INTERNAL_ERROR, description);
+  }
+}
+
+export class NotFoundError extends BaseError {
+  constructor(description = "not found") {
+    super("NotFoundError", STATUS_CODES.NOT_FOUND, description);
+  }
+}
+
+export class AuthorizeError extends BaseError {
+  constructor(description = "unauthorised") {
+    super("AuthorizeError", STATUS_CODES.UN_AUTHORISED, description);
+  }
+}
+
+export class ValidationError extends BaseError {
+  constructor(description = "bad request") {
+    super("ValidationError", STATUS_CODES.BAD_REQUEST, description);
+  }
+}
