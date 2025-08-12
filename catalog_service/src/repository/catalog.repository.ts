@@ -1,20 +1,41 @@
+import { PrismaClient } from "@prisma/client";
 import { Catalog } from "../interface/catalog.interface";
 import { Product } from "../models/product.model";
 
 export class CatalogRepository implements Catalog {
-  create(data: Product): Promise<Product> {
-    throw new Error("Method not implemented.");
+  _prisma: PrismaClient;
+  constructor() {
+    this._prisma = new PrismaClient();
   }
-  findAll(): Promise<Product[]> {
-    throw new Error("Method not implemented.");
+
+  async create(data: Product): Promise<Product> {
+    return await this._prisma.product.create({
+      data,
+    });
   }
-  findById(id: number): Promise<Product> {
-    throw new Error("Method not implemented.");
+  async findAll(limit: number, offset: number): Promise<Product[]> {
+    return await this._prisma.product.findMany({
+      take: limit,
+      skip: offset,
+      orderBy: {
+        id: "asc",
+      },
+    });
   }
-  update(id: number, data: Product): Promise<Product> {
-    throw new Error("Method not implemented.");
+  async findById(id: number): Promise<Product> {
+    return await this._prisma.product.findUnique({
+      where: { id },
+    });
   }
-  delete(id: number): Promise<void> {
-    throw new Error("Method not implemented.");
+  async update(id: number, data: Product): Promise<Product> {
+    return await this._prisma.product.update({
+      where: { id },
+      data,
+    });
+  }
+  async delete(id: number): Promise<void> {
+    return await this._prisma.product.delete({
+      where: { id },
+    });
   }
 }
