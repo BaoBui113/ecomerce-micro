@@ -1,10 +1,10 @@
-import { Catalog } from "../interface/catalog.interface";
-import { Product } from "../models/product.model";
+import { ICatalogRepository } from "../interface/catalog.interface";
+import { MessageType } from "../types";
 
 export class CatalogService {
-  private _repository: Catalog;
+  private _repository: ICatalogRepository;
 
-  constructor(repository: Catalog) {
+  constructor(repository: ICatalogRepository) {
     this._repository = repository;
   }
 
@@ -16,21 +16,24 @@ export class CatalogService {
     return data;
   }
 
-  async updateProduct(id: number, input: Product) {
-    const data = await this._repository.update(id, input);
-
+  async updateProduct(input: any) {
+    const data = await this._repository.update(input);
+    if (!data.id) {
+      throw new Error("unable to update product");
+    }
+    // emit event to update record in Elastic search
     return data;
   }
 
   // instead of this we will get product from Elastic search
   async getProducts(limit: number, offset: number) {
-    const products = await this._repository.findAll(limit, offset);
+    const products = await this._repository.find(limit, offset);
 
     return products;
   }
 
   async getProduct(id: number) {
-    const product = await this._repository.findById(id);
+    const product = await this._repository.findOne(id);
     return product;
   }
 
@@ -38,5 +41,19 @@ export class CatalogService {
     const response = await this._repository.delete(id);
     // delete record from Elastic search
     return response;
+  }
+
+  async getProductStock(ids: number[]) {
+    const products = await this._repository.findStock(ids);
+    if (!products) {
+      throw new Error("unable to find product stock details");
+    }
+    return products;
+  }
+
+  async handleBrokerMessage(data: MessageType) {
+    console.log("Received message from broker:", data);
+    console.log("Event:", data.event);
+    console.log("Data:", data.data);
   }
 }

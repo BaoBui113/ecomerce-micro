@@ -1,10 +1,11 @@
 import { Consumer, Kafka, logLevel, Partitioners, Producer } from "kafkajs";
-import { MessageType, OrderEvent, TOPIC_TYPE } from "../../types";
+
+import { CatalogEvent, MessageType, TOPIC_TYPE } from "../../types";
 import { MessageBrokerType, MessageHandler, PublishType } from "./broker.type";
 
 // configuration properties
-const CLIENT_ID = process.env.CLIENT_ID || "order-service";
-const GROUP_ID = process.env.GROUP_ID || "order-service-group";
+const CLIENT_ID = process.env.CLIENT_ID || "catalog-service";
+const GROUP_ID = process.env.GROUP_ID || "catalog-service-group";
 const BROKERS = [process.env.BROKER_1 || "localhost:9092"];
 
 const kafka = new Kafka({
@@ -38,7 +39,7 @@ const createTopic = async (topic: string[]) => {
 };
 
 const connectProducer = async <T>(): Promise<T> => {
-  await createTopic(["OrderEvents"]);
+  await createTopic(["CatalogEvents"]);
 
   if (producer) {
     console.log("producer already connected with existing connection");
@@ -103,17 +104,19 @@ const subscribe = async (
 ): Promise<void> => {
   const consumer = await connectConsumer<Consumer>();
   await consumer.subscribe({ topic: topic, fromBeginning: true });
+  console.log("Chui vao day");
 
   await consumer.run({
     eachMessage: async ({ topic, partition, message }) => {
-      if (topic !== "OrderEvents") {
+      if (!["CatalogEvents"].includes(topic)) {
         return;
       }
+      console.log("In ra data", message, partition, topic);
 
       if (message.key && message.value) {
         const inputMessage: MessageType = {
           headers: message.headers,
-          event: message.key.toString() as OrderEvent,
+          event: message.key.toString(), // Changed from CatalogEvent cast to string
           data: message.value ? JSON.parse(message.value.toString()) : null,
         };
         await messageHandler(inputMessage);

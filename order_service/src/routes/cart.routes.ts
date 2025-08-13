@@ -13,11 +13,11 @@ router.post(
   RequestAuthorizer,
   async (req: Request, res: Response, next: NextFunction) => {
     try {
-      //   const user = req.user;
-      //   if (!user) {
-      //     next(new Error("User not found"));
-      //     return;
-      //   }
+      const user = req.user;
+      if (!user) {
+        next(new Error("User not found"));
+        return;
+      }
 
       const error = ValidateRequest<CartRequestInput>(
         req.body,
@@ -33,8 +33,7 @@ router.post(
       const response = await service.CreateCart(
         {
           ...input,
-          //   customerId: user.id,
-          customerId: req.body.customerId,
+          customerId: user.id,
         },
         repo
       );

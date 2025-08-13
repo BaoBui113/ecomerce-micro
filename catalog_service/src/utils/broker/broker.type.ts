@@ -1,9 +1,9 @@
-import { MessageType, OrderEvent, TOPIC_TYPE } from "../../types";
+import { CatalogEvent, MessageType, TOPIC_TYPE } from "../../types";
 
 export interface PublishType {
   headers: Record<string, string | undefined>;
   topic: TOPIC_TYPE;
-  event: OrderEvent;
+  event: CatalogEvent;
   message: Record<string, any>;
 }
 

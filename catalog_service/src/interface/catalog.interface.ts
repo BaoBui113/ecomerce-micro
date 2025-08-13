@@ -1,9 +1,10 @@
 import { Product } from "../models/product.model";
 
-export interface Catalog {
+export interface ICatalogRepository {
   create(data: Product): Promise<Product>;
-  findAll(limit: number, offset: number): Promise<Product[]>;
-  findById(id: number): Promise<Product | null>;
-  update(id: number, data: Product): Promise<Product>;
-  delete(id: number): Promise<void>;
+  update(data: Product): Promise<Product>;
+  delete(id: any);
+  find(limit: number, offset: number): Promise<Product[]>;
+  findOne(id: number): Promise<Product>;
+  findStock(ids: number[]): Promise<Product[]>;
 }

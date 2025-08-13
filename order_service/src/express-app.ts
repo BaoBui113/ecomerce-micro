@@ -2,16 +2,18 @@ import cors from "cors";
 import express, { NextFunction, Request, Response } from "express";
 import cartRoutes from "./routes/cart.routes";
 import orderRoutes from "./routes/order.routes";
+import { InitializeBroker } from "./service/broker.service";
+import { httpLogger } from "./utils";
+
 // import { httpLogger, HandleErrorWithLogger } from "./utils";
-// import { InitializeBroker } from "./service/broker.service";
 
 export const ExpressApp = async () => {
   const app = express();
   app.use(cors());
   app.use(express.json());
-  //   app.use(httpLogger);
+  app.use(httpLogger);
 
-  //   await InitializeBroker();
+  await InitializeBroker();
 
   app.use(cartRoutes);
   app.use(orderRoutes);
